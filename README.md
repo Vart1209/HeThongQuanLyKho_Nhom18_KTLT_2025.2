@@ -20,4 +20,6 @@
 2. Sau khi hệ thống tải xong giao diện, mở **Terminal** (tổ hợp phím `Ctrl + \``) và chạy lần lượt các lệnh sau:
 
 ```bash
-cd BTLKTLT && g++ main.cpp -o main && ./main
+cd BTLKTLT
+g++ main.cpp -o main
+./main
