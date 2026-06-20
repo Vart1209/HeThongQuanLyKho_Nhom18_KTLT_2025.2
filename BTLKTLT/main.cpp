@@ -95,7 +95,7 @@ int CatChuoi(string cot1, int max1, int setw1, string cot2, int max2, int setw2,
     int len1 = cot1.length();
     int len2 = cot2.length();
     
-    if (len1 <= max1 && len2 <= max2) return; 
+    if (len1 <= max1 && len2 <= max2) return 0; 
 
     while (i < len1 || j < len2) {
         cout << left << setw(leTrai) << " "; 
