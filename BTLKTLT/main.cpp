@@ -1,4 +1,4 @@
-//Fix bug ver 20/06/2026
+//Fix bug ver 20/06/2026v2
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -71,6 +71,24 @@ int BaoLoi(int errCode) {
 }
 
 //Ham Bo Sung
+void XoaManHinh() {
+#ifdef _WIN32
+    system("cls"); 
+#else
+    system("clear"); 
+#endif
+}
+
+void DungManHinh() {
+#ifdef _WIN32
+    system("pause");
+#else
+    cout << "Nhan Enter de tiep tuc...\n";
+    cin.clear();
+    cin.get();
+#endif
+}
+
 string CatChuoi(string str, int maxLen) {
     if (str.length() > maxLen) {
         return str.substr(0, maxLen - 3) + "...";
@@ -900,7 +918,7 @@ int main() {
     cout << " => Da dong bo ton kho tu StockLevel vao Product!\n";
 
     do {
-        system("cls");
+        XoaManHinh(); 
         cout << "\n=== CHUONG TRINH QUAN LY KHO HANG ===\n";
         cout << "1. Quan ly san pham\n";
         cout << "2. Quan ly nhap/xuat san pham\n";
@@ -1126,7 +1144,7 @@ int main() {
         
         if (choice != 4) {
             cout << "\n";
-            system("pause");
+            DungManHinh();
         }
     } while (choice != 4);
 
