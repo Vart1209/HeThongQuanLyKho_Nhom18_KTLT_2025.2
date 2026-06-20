@@ -1,4 +1,4 @@
-//Fix bug ver 20/06/2026v2
+//Fix bug ver 20/06/2026v3
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -89,12 +89,37 @@ void DungManHinh() {
 #endif
 }
 
-string CatChuoi(string str, int maxLen) {
-    if (str.length() > maxLen) {
-        return str.substr(0, maxLen - 3) + "...";
+int CatChuoi(string cot1, int max1, int setw1, string cot2, int max2, int setw2, int leTrai) {
+    int i = max1; 
+    int j = max2;
+    int len1 = cot1.length();
+    int len2 = cot2.length();
+    
+    if (len1 <= max1 && len2 <= max2) return; 
+
+    while (i < len1 || j < len2) {
+        cout << left << setw(leTrai) << " "; 
+        
+        if (i < len1) {
+            cout << setw(setw1) << cot1.substr(i, max1);
+            i += max1;
+        } else {
+            cout << setw(setw1) << " ";
+        }
+        
+        if (setw2 > 0) {
+            if (j < len2) {
+                cout << setw(setw2) << cot2.substr(j, max2);
+                j += max2;
+            } else {
+                cout << setw(setw2) << " ";
+            }
+        }
+        cout << endl;
     }
-    return str;
+    return 0;
 }
+
 double ChuyenSoThuc(string str) {
     if (str == "" || str == " ") return 0.0;
     try {
@@ -423,9 +448,6 @@ int InDanhSachSanPham() {
         string tenSP = current->data.ProductName;
         string loaiHang = current->data.CategoryName;
 
-        int lenTen = tenSP.length();
-        int lenLoai = loaiHang.length();
-        
         cout << left << setw(10) << current->data.ProductID
              << setw(30) << tenSP.substr(0, 28)
              << setw(20) << loaiHang.substr(0, 18)
@@ -433,28 +455,7 @@ int InDanhSachSanPham() {
              << setw(15) << tonKhoStr
              << current->data.MinStockLevel << endl;
              
-        int i = 28; 
-        int j = 18; 
-        
-        while (i < lenTen || j < lenLoai) {
-            cout << left << setw(10) << " "; 
-            
-            if (i < lenTen) {
-                cout << setw(30) << tenSP.substr(i, 28);
-                i += 28;
-            } else {
-                cout << setw(30) << " "; 
-            }
-            
-            if (j < lenLoai) {
-                cout << setw(20) << loaiHang.substr(j, 18);
-                j += 18;
-            } else {
-                cout << setw(20) << " ";
-            }
-            
-            cout << endl; 
-        }
+        CatChuoi(tenSP, 28, 30, loaiHang, 18, 20, 10);
         
         current = current->next;
     }
@@ -741,12 +742,16 @@ int BaoCaoTonKho() {
     StockLevelNode* current = headKho;
     while (current != NULL) {
         ProductNode* p = TimSanPham(current->data.ProductID);
-        string name = (p != NULL) ? p->data.ProductName : "Khong xac dinh";
+        string tenSP = (p != NULL) ? p->data.ProductName : "Khong xac dinh";
+
         cout << left << setw(10) << current->data.ProductID
-             << setw(28) << name
+             << setw(28) << tenSP.substr(0, 26)
              << setw(8) << current->data.WarehouseID
              << setw(10) << current->data.QuantityOnHand
              << current->data.LastUpdated << endl;
+
+        CatChuoi(tenSP, 26, 28, "", 0, 0, 10);
+        
         current = current->next;
     }
     cout << string(70, '-') << endl;
@@ -771,15 +776,13 @@ int BaoCaoSapHet() {
 
     ProductNode* current = headSP;
     bool found = false;
+    
     while (current != NULL) {
         if (current->data.QuantityOnHand < current->data.MinStockLevel) {
             string tonKhoStr = to_string(current->data.QuantityOnHand) + " " + current->data.Unit;
             string tenSP = current->data.ProductName;
             string loaiHang = current->data.CategoryName;
 
-            int lenTen = tenSP.length();
-            int lenLoai = loaiHang.length();
-            
             cout << left << setw(10) << current->data.ProductID
                  << setw(30) << tenSP.substr(0, 28)
                  << setw(20) << loaiHang.substr(0, 18)
@@ -787,29 +790,12 @@ int BaoCaoSapHet() {
                  << setw(15) << tonKhoStr
                  << current->data.MinStockLevel << endl;
                  
-            int i = 28; 
-            int j = 18; 
-            
-            while (i < lenTen || j < lenLoai) {
-                cout << left << setw(10) << " "; 
-                if (i < lenTen) {
-                    cout << setw(30) << tenSP.substr(i, 28);
-                    i += 28;
-                } else {
-                    cout << setw(30) << " "; 
-                }
-                if (j < lenLoai) {
-                    cout << setw(20) << loaiHang.substr(j, 18);
-                    j += 18;
-                } else {
-                    cout << setw(20) << " ";
-                }
-                cout << endl; 
-            }
+            CatChuoi(tenSP, 28, 30, loaiHang, 18, 20, 10);
             found = true;
         }
         current = current->next;
     }
+    
     if (!found) {
          cout << "Tuyet voi! Khong co san pham nao ton kho duoi muc toi thieu.\n";
     }
@@ -850,11 +836,19 @@ int ThongKeGiaTriKho() {
         if (current->data.QuantityOnHand > 0) {
             double value = current->data.QuantityOnHand * current->data.ProductStandardCost;
             totalValue += value;
+            
+            // Lay ten san pham ra bien rieng
+            string tenSP = current->data.ProductName;
+            
+            // In dong dau tien, cat chuoi o 28 de thưa 2 khoang trang cho cot 30
             cout << left << setw(10) << current->data.ProductID
-                 << setw(30) << current->data.ProductName
+                 << setw(30) << tenSP.substr(0, 28)
                  << setw(15) << current->data.QuantityOnHand
                  << setw(15) << current->data.ProductStandardCost
                  << fixed << setprecision(2) << value << endl;
+                 
+            // Goi ham bẻ dong cho nhung ten SP con du chu (cot 2 khong co nen truyen "")
+            CatChuoi(tenSP, 28, 30, "", 0, 0, 10);
         }
         current = current->next;
     }
@@ -992,6 +986,8 @@ int main() {
                         getline(cin, targetID);
                         InChiTietSP(targetID);
                         break;
+                    case 6:
+                        break;
                     default:
                         cout << "Lua chon khong hop le!\n";
                 }
@@ -1093,6 +1089,8 @@ int main() {
                             BaoLoi(res);
                         }
                         break;
+                    case 5:
+                        break;
                     default:
                         cout << "Lua chon khong hop le!\n";
                 }
@@ -1128,6 +1126,8 @@ int main() {
                         break;
                     case 5:
                         NhatKyGiaoDich(FILE_TRANSACTION);
+                        break;
+                    case 6:
                         break;
                     default:
                         cout << "Lua chon khong hop le!\n";
